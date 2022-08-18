@@ -1,4 +1,5 @@
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import * as d3 from "https://unpkg.com/d3?module";
 
 async function drawBars() {
   // 1. Access data
@@ -17,8 +18,8 @@ async function drawBars() {
       top: 30,
       right: 10,
       bottom: 50,
-      left: 50
-    }
+      left: 50,
+    },
   };
   dimensions.boundedWidth =
     dimensions.width - dimensions.margin.left - dimensions.margin.right;
@@ -82,20 +83,22 @@ async function drawBars() {
     .attr("width", (d) => d3.max([0, xScale(d.x1) - xScale(d.x0) - barPadding]))
     .attr("height", (d) => dimensions.boundedHeight - yScale(yAccessor(d)))
     .attr("fill", "cornflowerblue");
-  barRects.on("mouseenter", (event, d) => {
-    const x = xScale(xAccessor(d));
-    const y = yScale(yAccessor(d));
 
-    // "translate(calc(10px - 50%), calc(10px - 100%))"
+  barRects.on("mouseenter", (event, d) => {
+    const coords = d3.pointer(event);
+    console.log(coords[0], coords[1]); // log the mouse x,y position;
     tooltip
       .style(
         "transform",
-        `translate(calc(${x + dimensions.margin.left}px - 50%), calc(${
-          y + dimensions.margin.top - 10
+        `translate(calc(${coords[0] + dimensions.margin.left}px - 50%), calc(${
+          coords[1] + dimensions.margin.top - 10
         }px - 100%))`
       )
       .text(`Dew point: ${yAccessor(d)}`)
       .style("opacity", 1);
+  });
+  wrapper.on("mouseleave", () => {
+    tooltip.style("opacity", 0);
   });
 }
 drawBars();
